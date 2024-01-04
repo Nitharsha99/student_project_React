@@ -1,5 +1,7 @@
 import Student from "./Component/Student";
+import Teacher from "./Component/Teacher";
 import React, { useState } from 'react';
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Collapse,
     Navbar,
     NavbarToggler,
@@ -13,7 +15,9 @@ function App(props) {
 
   const toggleNavbar = () => setCollapsed(!collapsed);
   return (
+    
     <div class="App">
+      
                <div>
       <Navbar color="success"
                 dark>
@@ -24,10 +28,10 @@ function App(props) {
         <Collapse isOpen={!collapsed} navbar>
           <Nav navbar>
             <NavItem>
-              <NavLink href="/components/">Students</NavLink>
+              <NavLink href="/student">Students</NavLink>
             </NavItem>
             <NavItem>
-              <NavLink href="https://github.com/reactstrap/reactstrap">
+              <NavLink href="/teacher">
                 Teachers
               </NavLink>
             </NavItem>
@@ -45,7 +49,15 @@ function App(props) {
         </Collapse>
       </Navbar>
     </div>
-      <Student/>
+    <BrowserRouter>
+      <Routes>
+        <Route >
+          <Route path="/student" element={<Student />} />
+          <Route path="/teacher" element={<Teacher />} />
+          <Route path="*" element={<Student />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
     </div>
   );
 }
