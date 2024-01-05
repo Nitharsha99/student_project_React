@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, Load, useRef } from 'react';
+import axios from "axios";
 import { Button,Form,FormGroup,Input,
     Label,Row,Col, Badge,  Collapse,
     Navbar,
@@ -9,15 +10,177 @@ import { Button,Form,FormGroup,Input,
     NavLink, Table } from 'reactstrap';
 import './../Styles/Student.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { format } from 'date-fns';
 
 function Student() {
+
+const [id, setId] = useState("");
+const [fname, setFname] = useState("");
+const [lname, setLname] = useState("");
+const [cperson, setCPerson] = useState("");
+const [email, setEmail] = useState("");
+const [cnumber, setCNumber] = useState("");
+const [dob, setDOB] = useState(0);
+const [age, setAge] = useState("");
+const [classroomName, setClassroomName] = useState("");
+const [classroomId, setClassroomId] = useState("");
+const [Students, setStudent] = useState([]);
+const [Classrooms, setClassrooms] = useState([]);
+
+const formRef = useRef(null);
+
+useEffect(() => {
+  (async () => await Load())();
+}, []);
+
+const calculateAge = () => {
+  if (dob) {
+    const dobDate = new Date(dob);
+    const currentDate = new Date();
+
+    // Calculate the difference in years
+    const ageDifference = currentDate.getFullYear() - dobDate.getFullYear();
+
+    // Check if the birthday has occurred this year
+    if (
+      currentDate.getMonth() < dobDate.getMonth() ||
+      (currentDate.getMonth() === dobDate.getMonth() &&
+        currentDate.getDate() < dobDate.getDate())
+    ) {
+      setAge(ageDifference - 1);
+    } else {
+      setAge(ageDifference);
+    }
+  } else {
+    setAge('');
+  }
+};
+
+async function Load() {  
+  const students = await axios.get("https://localhost:7186/api/Student");
+  setStudent(students.data);
+  console.log(students.data);
+
+  const classes = await axios.get("https://localhost:7186/api/Classroom");
+  setClassrooms(classes.data);
+  console.log("class",classes.data);
+}
+
+async function saveStudent(event) {
+   
+  event.preventDefault();
+  try {
+    const selectedClassroom = Classrooms.find((classroomOption) => classroomOption.name === classroomName);
+    console.log("select", selectedClassroom);
+    const result = await axios.post("https://localhost:7186/api/Student", {
+      
+     fname: fname,
+     lname: lname,
+     cperson: cperson,
+     cnumber: cnumber,
+     email: email,
+     age: age,
+     dob: dob,
+     classroomId: selectedClassroom.id
+     
+    });
+    console.log("post result", result);
+    alert("Student Saved Successfully");
+        //setId("");
+        setFname("");
+        setLname("");
+        setCPerson("");
+        setCNumber("");
+        setAge("");
+        setEmail("");
+        setDOB("");
+        setClassroomName("");
+        setClassroomId("");
+     
+   
+    Load();
+  } catch (err) {
+    alert(err);
+  }
+}
+
+async function editStudent(students) {
+  const formattedDate = format(new Date(students.dob), 'yyyy-MM-dd');
+
+  setFname(students.firstName);
+  setLname(students.lastName);
+  setCPerson(students.contactPerson);
+  setCNumber(students.contactNo);
+  setAge(students.age);
+  setEmail(students.emailAddress);
+  setDOB(formattedDate);
+  setClassroomName(students.classroom.name);
+  setClassroomId(students.classroom.id);
+ 
+
+  setId(students.id);
+}
+
+async function DeleteStudent(id) {
+  const response = await axios.delete("https://localhost:7186/api/Student/" + id);
+  console.log("delete response", response);
+   alert("Student deleted Successfully");
+   //setId("");
+   setFname("");
+   setLname("");
+   setCPerson("");
+   setCNumber("");
+   setAge("");
+   setEmail("");
+   setDOB("");
+   setClassroomName("");
+   setClassroomId("");
+   Load();
+  }
+
+// async function update(event) {
+//   event.preventDefault();
+//   try {
+// await axios.patch("https://localhost:7195/api/Student/UpdateStudent/"+ students.find((u) => u.id === id).id || id,
+//       {
+//       id: id,
+//       stname: stname,
+//       course: course,
+//       }
+//     );
+//     alert("Registation Updateddddd");
+//     setId("");
+//     setName("");
+//     setCourse("");
+   
+//     Load();
+//   } catch (err) {
+//     alert(err);
+//   }
+// }
+
+const handleReset = () => {
+  setFname("");
+  setLname("");
+  setCPerson("");
+  setCNumber("");
+  setAge("");
+  setEmail("");
+  setDOB("");
+  setClassroomName(""); // Reset the selected classroom state
+  setClassroomId("");
+  if (formRef.current) {
+    formRef.current.reset(); // Use the reset method on the form if it exists
+  }
+
+};
 
     return (
       <div >
 
      <div className='Student-form'>
 
-     <Navbar
+            <Navbar
                 className="my-2"
                 color="success"
                 dark
@@ -37,6 +200,10 @@ function Student() {
                     name="firstName"
                     placeholder="First Name"
                     type="text"
+                    value={fname}
+                    onChange={(event) => {
+                      setFname(event.target.value);
+                    }}
                     />
                 </FormGroup>
                 </Col>
@@ -50,6 +217,10 @@ function Student() {
                     name="lastName"
                     placeholder="Last Name"
                     type="text"
+                    value={lname}
+                    onChange={(event) => {
+                      setLname(event.target.value);
+                    }}
                     />
                 </FormGroup>
                 </Col>
@@ -66,6 +237,10 @@ function Student() {
                     name="email"
                     placeholder="Email Address"
                     type="email"
+                    value={email}
+                    onChange={(event) => {
+                      setEmail(event.target.value);
+                    }}
                     />
                 </FormGroup>
                 </Col>
@@ -79,6 +254,10 @@ function Student() {
                     name="contact"
                     placeholder="Contact Person"
                     type="text"
+                    value={cperson}
+                    onChange={(event) => {
+                      setCPerson(event.target.value);
+                    }}
                     />
                 </FormGroup>
                 </Col>
@@ -95,6 +274,10 @@ function Student() {
                     name="contactNo"
                     placeholder="Contact Number"
                     type="text"
+                    value={cnumber}
+                    onChange={(event) => {
+                      setCNumber(event.target.value);
+                    }}
                     />
                 </FormGroup>
                 </Col>
@@ -108,6 +291,11 @@ function Student() {
                     name="dob"
                     placeholder="Date of Birth"
                     type="Date"
+                    value={dob}
+                    onChange={(event) => {
+                      setDOB(event.target.value);
+                    }}
+                    onBlur={calculateAge}
                     />
                 </FormGroup>
                 </Col>
@@ -124,6 +312,10 @@ function Student() {
                     name="age"
                     placeholder="Age"
                     type="number"
+                    value={age}
+                    onChange={(event) => {
+                      setAge(event.target.value);
+                    }}
                     />
                 </FormGroup>
                 </Col>
@@ -137,22 +329,17 @@ function Student() {
                     name="classroom"
                     placeholder="Classroom"
                     type="select"
+                    value={classroomName}
+                    onChange={(event) => {
+                      setClassroomName(event.target.value);
+                    }}
                     >
-                              <option>
-                                    1
-                                </option>
-                                <option>
-                                    2
-                                </option>
-                                <option>
-                                    3
-                                </option>
-                                <option>
-                                    4
-                                </option>
-                                <option>
-                                    5
-                                </option>
+                      {Classrooms.map((classroomOption) => (
+                          <option key={classroomOption.id} value={classroomOption.name}>
+                            {classroomOption.name}
+                          </option>
+                        ))}
+                               
                     </Input>
                 </FormGroup>
                 </Col>
@@ -164,28 +351,23 @@ function Student() {
             type="submit"
             value="Save"
             tag="input"
+            onClick={saveStudent}
         >
         </Button>
         {' '}
         <Button
-            color="success"
+            color="primary"
             tag="input"
             type="submit"
             value="Update"
         />
         {' '}
         <Button
-            color="danger"
-            tag="input"
-            type="submit"
-            value="Delete"
-        />
-        {' '}
-        <Button
-            color="primary"
+            color="warning"
             tag="input"
             type="reset"
             value="Reset"
+            onClick={handleReset}
         />
         {' '}
         </div>
@@ -207,7 +389,7 @@ function Student() {
   <thead>
     <tr>
       <th>
-        first Name
+        First Name
       </th>
       <th>
         Last Name
@@ -224,73 +406,44 @@ function Student() {
       <th>
         Edit
       </th>
+      <th>
+        Remove
+      </th>
     </tr>
   </thead>
-  <tbody>
-    <tr>
-      <th scope="row">
-        1
-      </th>
-      <td>
-        Mark
+  {Students.map(function fn(student) { return (
+    <tbody>
+    <tr key={student.id}>
+      <td scope="row">
+        {student.firstName}
       </td>
       <td>
-        Otto
+        {student.lastName}
       </td>
       <td>
-        @mdo
+        {student.emailAddress}
       </td>
       <td>
-        @mdo
+        {student.contactNo}
       </td>
       <td>
-      <Button color="primary"
-            tag="input" value="Edit" size='sm'/>
-      </td>
-    </tr>
-    <tr>
-      <th scope="row">
-        2
-      </th>
-      <td>
-        Jacob
-      </td>
-      <td>
-        Thornton
-      </td>
-      <td>
-        @fat
-      </td>
-      <td>
-        @mdo
+        {student.classroom.name}
       </td>
       <td>
       <Button color="primary"
-            tag="input" value="Edit" size='sm'/>
-      </td>
-    </tr>
-    <tr>
-      <th scope="row">
-        3
-      </th>
-      <td>
-        Larry
+            tag="input" type="submit" value="Edit" size='sm'
+            onClick={() => editStudent(student)}/>
       </td>
       <td>
-        the Bird
-      </td>
-      <td>
-        @twitter
-      </td>
-      <td>
-        @mdo
-      </td>
-      <td>
-        <Button color="primary"
-            tag="input" value="Edit" size='sm'/>
+      <Button color="danger"
+            tag="input" type="submit" value="Remove" size='sm'
+            onClick={() => DeleteStudent(student.id)}/>
       </td>
     </tr>
   </tbody>
+  );
+  })}
+  
 </Table>
 
         </div>

@@ -7,10 +7,10 @@ import { Button,Form,FormGroup,Input,
     Nav,
     NavItem,
     NavLink, Table } from 'reactstrap';
-import './../Styles/Subject.css';
+import './../Styles/Classroom.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-function Subject() {
+function Classroom() {
 
 const [id, setId] = useState("");
 const [name, setName] = useState("");
@@ -18,7 +18,7 @@ const [name, setName] = useState("");
     return (
       <div >
 
-     <div className='Subject-form'>
+     <div className='Classroom-form'>
 
      <Navbar
                 className="my-2"
@@ -26,7 +26,7 @@ const [name, setName] = useState("");
                 dark
             >
                 <NavbarBrand href="/">
-                Subject Details
+                Classroom Details
                 </NavbarBrand>
             </Navbar>
                 <Row>
@@ -79,7 +79,7 @@ const [name, setName] = useState("");
 
      </div>
 
-        <div className='Subject-table'>
+        <div className='Classroom-table'>
 
         <Navbar
                 className="my-2"
@@ -87,7 +87,7 @@ const [name, setName] = useState("");
                 dark
             >
                 <NavbarBrand href="/">
-                Existing Subjects
+                Existing Classrooms
                 </NavbarBrand>
             </Navbar>
         <Table striped>
@@ -97,7 +97,7 @@ const [name, setName] = useState("");
         Id
       </th>
       <th>
-        Subject Name
+        Classroom Name
       </th>
       <th>
         Edit
@@ -135,4 +135,4 @@ const [name, setName] = useState("");
     );
   }
   
-  export default Subject;
+  export default Classroom;

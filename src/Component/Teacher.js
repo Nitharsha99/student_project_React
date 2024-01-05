@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, Load, useRef } from 'react';
+import axios from "axios";
 import { Button,Form,FormGroup,Input,
     Label,Row,Col, Badge,  Collapse,
     Navbar,
@@ -11,6 +12,23 @@ import './../Styles/Teacher.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 function Teacher() {
+
+const [id, setId] = useState("");
+const [fname, setFname] = useState("");
+const [lname, setLname] = useState("");
+const [email, setEmail] = useState("");
+const [contact, setContact] = useState("");
+const [Teachers, setTeacher] = useState([]);
+
+useEffect(() => {
+  (async () => await Load())();
+}, []);
+
+async function Load() {  
+  const teachers = await axios.get("https://localhost:7186/api/Teacher");
+  setTeacher(teachers.data);
+  console.log(teachers.data);
+}
 
     return (
       <div >
@@ -37,6 +55,10 @@ function Teacher() {
                     name="firstName"
                     placeholder="First Name"
                     type="text"
+                    value={fname}
+                    onChange={(event) => {
+                      setFname(event.target.value);
+                    }}
                     />
                 </FormGroup>
                 </Col>
@@ -50,6 +72,10 @@ function Teacher() {
                     name="lastName"
                     placeholder="Last Name"
                     type="text"
+                    value={lname}
+                    onChange={(event) => {
+                      setLname(event.target.value);
+                    }}
                     />
                 </FormGroup>
                 </Col>
@@ -66,6 +92,10 @@ function Teacher() {
                     name="email"
                     placeholder="Email Address"
                     type="email"
+                    value={email}
+                    onChange={(event) => {
+                      setEmail(event.target.value);
+                    }}
                     />
                 </FormGroup>
                 </Col>
@@ -79,6 +109,10 @@ function Teacher() {
                     name="contact"
                     placeholder="Contact Number"
                     type="text"
+                    value={contact}
+                    onChange={(event) => {
+                      setContact(event.target.value);
+                    }}
                     />
                 </FormGroup>
                 </Col>
@@ -94,21 +128,14 @@ function Teacher() {
         </Button>
         {' '}
         <Button
-            color="success"
+            color="primary"
             tag="input"
             type="submit"
             value="Update"
         />
         {' '}
         <Button
-            color="danger"
-            tag="input"
-            type="submit"
-            value="Delete"
-        />
-        {' '}
-        <Button
-            color="primary"
+            color="warning"
             tag="input"
             type="reset"
             value="Reset"
@@ -147,64 +174,40 @@ function Teacher() {
       <th>
         Edit
       </th>
+      <th>
+        Remove
+      </th>
     </tr>
   </thead>
+  {Teachers.map(function fn(teacher) { return (
   <tbody>
-    <tr>
-      <th scope="row">
-        1
-      </th>
-      <td>
-        Mark
+    <tr key={teacher.id}>
+      <td scope="row">
+        {teacher.firstName}
       </td>
       <td>
-        Otto
+        {teacher.lastName}
       </td>
       <td>
-        @mdo
+        {teacher.emailAddress}
       </td>
       <td>
-      <Button color="primary"
-            tag="input" value="Edit" size='sm'/>
-      </td>
-    </tr>
-    <tr>
-      <th scope="row">
-        2
-      </th>
-      <td>
-        Jacob
-      </td>
-      <td>
-        Thornton
-      </td>
-      <td>
-        @fat
+        {teacher.contactNo}
       </td>
       <td>
       <Button color="primary"
-            tag="input" value="Edit" size='sm'/>
-      </td>
-    </tr>
-    <tr>
-      <th scope="row">
-        3
-      </th>
-      <td>
-        Larry
+            tag="input" type="submit" value="Edit" size='sm'/>
       </td>
       <td>
-        the Bird
-      </td>
-      <td>
-        @twitter
-      </td>
-      <td>
-        <Button color="primary"
-            tag="input" value="Edit" size='sm'/>
+      <Button color="danger"
+            tag="input" type="submit" value="Remove" size='sm'
+            //onClick={() => DeleteStudent(student.id)}
+            />
       </td>
     </tr>
   </tbody>
+    );
+  })}
 </Table>
 
         </div>
