@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, Load, useRef } from 'react';
+import axios from "axios";
 import { Button,Form,FormGroup,Input,
     Label,Row,Col, Badge,  Collapse,
     Navbar,
@@ -14,6 +15,81 @@ function Subject() {
 
 const [id, setId] = useState("");
 const [name, setName] = useState("");
+const [subject, setSubject] = useState([]);
+
+const formRef = useRef(null);
+
+useEffect(() => {
+  (async () => await Load())();
+}, []);
+
+async function Load() {  
+  const subjects = await axios.get("https://localhost:7186/api/Subject");
+  setSubject(subjects.data);
+  console.log(subjects.data);
+}
+
+async function saveSubject(event) {
+   
+  event.preventDefault();
+  try {
+    const result = await axios.post("https://localhost:7186/api/Subject", {
+      
+     Name: name
+     
+    });
+    console.log("post result", result);
+    alert("Subject Saved Successfully");
+        //setId("");
+        setName("");
+
+    Load();
+  } catch (err) {
+    alert(err);
+  }
+}
+
+async function editSubject(subjects) {
+  setName(subjects.name);
+ 
+  setId(subjects.id);
+}
+
+async function updateSubject(event) {
+  event.preventDefault();
+  try {
+      const response = await axios.patch("https://localhost:7186/api/Subject/"+ subject.find((u) => u.id === id).id || id,
+      {
+      id: id,
+      Name: name,
+      }
+    );
+    console.log("update", response);
+    alert("Subject details Updated Successfully");
+    setId("");
+    setName("");
+   
+    Load();
+  } catch (err) {
+    alert(err);
+  }
+}
+
+async function DeleteSubject(id) {
+  const response = await axios.delete("https://localhost:7186/api/Subject/" + id);
+  console.log("delete response", response);
+   alert("Subject deleted Successfully");
+   //setId("");
+   setName("");
+   Load();
+  }
+
+const handleReset = () => {
+  setName("");
+  if (formRef.current) {
+    formRef.current.reset(); // Use the reset method on the form if it exists
+  }
+}
 
     return (
       <div >
@@ -44,6 +120,9 @@ const [name, setName] = useState("");
                     onChange={(event) => {
                       setName(event.target.value);
                     }}
+                    required
+                    pattern=".*\S+.*" // Ensures at least one non-whitespace character
+                    title="Please enter a valid name"
                     />
                 </FormGroup>
                 </Col>
@@ -58,6 +137,7 @@ const [name, setName] = useState("");
             type="submit"
             value="Save"
             tag="input"
+            onClick={saveSubject}
         >
         </Button>
         {' '}
@@ -66,6 +146,7 @@ const [name, setName] = useState("");
             tag="input"
             type="submit"
             value="Update"
+            onClick={updateSubject}
         />
         {' '}
         <Button
@@ -73,6 +154,7 @@ const [name, setName] = useState("");
             tag="input"
             type="reset"
             value="Reset"
+            onClick={handleReset}
         />
         {' '}
         </div>
@@ -107,26 +189,30 @@ const [name, setName] = useState("");
       </th>
     </tr>
   </thead>
+  {subject.map(function fn(subject) { return (
   <tbody>
     <tr>
       <th scope="row">
-        1
+        {subject.id}
       </th>
       <td>
-        Mark
+        {subject.name}
       </td>
       <td>
       <Button color="primary"
-            tag="input" type="submit" value="Edit" size='sm'/>
+            tag="input" type="submit" value="Edit" size='sm'
+            onClick={() => editSubject(subject)}/>
       </td>
       <td>
       <Button color="danger"
             tag="input" type="submit" value="Remove" size='sm'
-            //onClick={() => DeleteStudent(student.id)}
+            onClick={() => DeleteSubject(subject.id)}
             />
       </td>
     </tr>
   </tbody>
+     );
+    })}
 </Table>
 
         </div>

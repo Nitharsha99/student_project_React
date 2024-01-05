@@ -20,6 +20,8 @@ const [email, setEmail] = useState("");
 const [contact, setContact] = useState("");
 const [Teachers, setTeacher] = useState([]);
 
+const formRef = useRef(null);
+
 useEffect(() => {
   (async () => await Load())();
 }, []);
@@ -28,6 +30,89 @@ async function Load() {
   const teachers = await axios.get("https://localhost:7186/api/Teacher");
   setTeacher(teachers.data);
   console.log(teachers.data);
+}
+
+async function saveTeacher(event) {
+   
+  event.preventDefault();
+  try {
+    const result = await axios.post("https://localhost:7186/api/Teacher", {
+      
+     firstName: fname,
+     lastName: lname,
+     contactNo: contact,
+     emailAddress: email
+     
+    });
+    console.log("post result", result);
+    alert("Teacher Saved Successfully");
+        //setId("");
+        setFname("");
+        setLname("");
+        setContact("");
+        setEmail("");
+
+    Load();
+  } catch (err) {
+    alert(err);
+  }
+}
+
+async function editTeacher(teachers) {
+  setFname(teachers.firstName);
+  setLname(teachers.lastName);
+  setContact(teachers.contactNo);
+  setEmail(teachers.emailAddress);
+ 
+  setId(teachers.id);
+}
+
+async function updateTeacher(event) {
+  event.preventDefault();
+  try {
+      const response = await axios.patch("https://localhost:7186/api/Teacher/"+ Teachers.find((u) => u.id === id).id || id,
+      {
+      id: id,
+      firstName: fname,
+      lastName: lname,
+      contactNo: contact,
+      emailAddress: email,
+      }
+    );
+    console.log("update", response);
+    alert("Student details Updated Successfully");
+    setId("");
+    setFname("");
+    setLname("");
+    setContact("");
+    setEmail("");
+   
+    Load();
+  } catch (err) {
+    alert(err);
+  }
+}
+
+async function DeleteTeacher(id) {
+  const response = await axios.delete("https://localhost:7186/api/Teacher/" + id);
+  console.log("delete response", response);
+   alert("Teacher deleted Successfully");
+   //setId("");
+   setFname("");
+   setLname("");
+   setContact("");
+   setEmail("");
+   Load();
+  }
+
+const handleReset = () => {
+  setFname("");
+  setLname("");
+  setContact("");
+  setEmail("");
+  if (formRef.current) {
+    formRef.current.reset(); // Use the reset method on the form if it exists
+  }
 }
 
     return (
@@ -59,6 +144,9 @@ async function Load() {
                     onChange={(event) => {
                       setFname(event.target.value);
                     }}
+                    required
+                    pattern=".*\S+.*" // Ensures at least one non-whitespace character
+                    title="Please enter a valid first name"
                     />
                 </FormGroup>
                 </Col>
@@ -76,6 +164,9 @@ async function Load() {
                     onChange={(event) => {
                       setLname(event.target.value);
                     }}
+                    required
+                    pattern=".*\S+.*" // Ensures at least one non-whitespace character
+                    title="Please enter a valid last name"
                     />
                 </FormGroup>
                 </Col>
@@ -96,6 +187,9 @@ async function Load() {
                     onChange={(event) => {
                       setEmail(event.target.value);
                     }}
+                    required
+                    pattern=".*\S+.*" // Ensures at least one non-whitespace character
+                    title="Please enter a valid email"
                     />
                 </FormGroup>
                 </Col>
@@ -113,6 +207,9 @@ async function Load() {
                     onChange={(event) => {
                       setContact(event.target.value);
                     }}
+                    required
+                    pattern=".*\S+.*" // Ensures at least one non-whitespace character
+                    title="Please enter a valid contact"
                     />
                 </FormGroup>
                 </Col>
@@ -124,6 +221,7 @@ async function Load() {
             type="submit"
             value="Save"
             tag="input"
+            onClick={saveTeacher}
         >
         </Button>
         {' '}
@@ -132,6 +230,7 @@ async function Load() {
             tag="input"
             type="submit"
             value="Update"
+            onClick={updateTeacher}
         />
         {' '}
         <Button
@@ -139,6 +238,7 @@ async function Load() {
             tag="input"
             type="reset"
             value="Reset"
+            onClick={handleReset}
         />
         {' '}
         </div>
@@ -196,12 +296,13 @@ async function Load() {
       </td>
       <td>
       <Button color="primary"
-            tag="input" type="submit" value="Edit" size='sm'/>
+            tag="input" type="submit" value="Edit" size='sm'
+            onClick={() => editTeacher(teacher)}/>
       </td>
       <td>
       <Button color="danger"
             tag="input" type="submit" value="Remove" size='sm'
-            //onClick={() => DeleteStudent(student.id)}
+            onClick={() => DeleteTeacher(teacher.id)}
             />
       </td>
     </tr>
@@ -216,4 +317,4 @@ async function Load() {
     );
   }
   
-  export default Teacher;
+export default Teacher;

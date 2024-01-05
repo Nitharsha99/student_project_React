@@ -20,7 +20,7 @@ const [lname, setLname] = useState("");
 const [cperson, setCPerson] = useState("");
 const [email, setEmail] = useState("");
 const [cnumber, setCNumber] = useState("");
-const [dob, setDOB] = useState(0);
+const [dob, setDOB] = useState("");
 const [age, setAge] = useState("");
 const [classroomName, setClassroomName] = useState("");
 const [classroomId, setClassroomId] = useState("");
@@ -70,18 +70,20 @@ async function saveStudent(event) {
    
   event.preventDefault();
   try {
+    console.log("select-test-map", classroomId);
+    console.log("select-test", classroomName);
     const selectedClassroom = Classrooms.find((classroomOption) => classroomOption.name === classroomName);
     console.log("select", selectedClassroom);
     const result = await axios.post("https://localhost:7186/api/Student", {
-      
-     fname: fname,
-     lname: lname,
-     cperson: cperson,
-     cnumber: cnumber,
-     email: email,
+
+     firstName: fname,
+     lastName: lname,
+     contactPerson: cperson,
+     contactNo: cnumber,
+     emailAddress: email,
      age: age,
      dob: dob,
-     classroomId: selectedClassroom.id
+     classroomId: classroomId
      
     });
     console.log("post result", result);
@@ -138,26 +140,40 @@ async function DeleteStudent(id) {
    Load();
   }
 
-// async function update(event) {
-//   event.preventDefault();
-//   try {
-// await axios.patch("https://localhost:7195/api/Student/UpdateStudent/"+ students.find((u) => u.id === id).id || id,
-//       {
-//       id: id,
-//       stname: stname,
-//       course: course,
-//       }
-//     );
-//     alert("Registation Updateddddd");
-//     setId("");
-//     setName("");
-//     setCourse("");
+async function updateStudent(event) {
+  event.preventDefault();
+  try {
+      const response = await axios.patch("https://localhost:7186/api/Student/"+ Students.find((u) => u.id === id).id || id,
+      {
+      id: id,
+      firstName: fname,
+      lastName: lname,
+      contactPerson: cperson,
+      contactNo: cnumber,
+      emailAddress: email,
+      age: age,
+      dob: dob,
+      classroomId: classroomId
+      }
+    );
+    console.log("update", response);
+    alert("Student details Updated Successfully");
+    setId("");
+    setFname("");
+    setLname("");
+    setCPerson("");
+    setCNumber("");
+    setAge("");
+    setEmail("");
+    setDOB("");
+    setClassroomName("");
+    setClassroomId("");
    
-//     Load();
-//   } catch (err) {
-//     alert(err);
-//   }
-// }
+    Load();
+  } catch (err) {
+    alert(err);
+  }
+}
 
 const handleReset = () => {
   setFname("");
@@ -200,10 +216,13 @@ const handleReset = () => {
                     name="firstName"
                     placeholder="First Name"
                     type="text"
+                    required
                     value={fname}
                     onChange={(event) => {
                       setFname(event.target.value);
                     }}
+                    pattern=".*\S+.*" // Ensures at least one non-whitespace character
+                    title="Please enter a valid first name"
                     />
                 </FormGroup>
                 </Col>
@@ -221,6 +240,9 @@ const handleReset = () => {
                     onChange={(event) => {
                       setLname(event.target.value);
                     }}
+                    required
+                    pattern=".*\S+.*" // Ensures at least one non-whitespace character
+                    title="Please enter a valid last name"
                     />
                 </FormGroup>
                 </Col>
@@ -241,6 +263,9 @@ const handleReset = () => {
                     onChange={(event) => {
                       setEmail(event.target.value);
                     }}
+                    required
+                    pattern=".*\S+.*" // Ensures at least one non-whitespace character
+                    title="Please enter a valid email address"
                     />
                 </FormGroup>
                 </Col>
@@ -258,6 +283,9 @@ const handleReset = () => {
                     onChange={(event) => {
                       setCPerson(event.target.value);
                     }}
+                    required
+                    pattern=".*\S+.*" // Ensures at least one non-whitespace character
+                    title="Please enter a valid contact person"
                     />
                 </FormGroup>
                 </Col>
@@ -278,6 +306,9 @@ const handleReset = () => {
                     onChange={(event) => {
                       setCNumber(event.target.value);
                     }}
+                    required
+                    pattern=".*\S+.*" // Ensures at least one non-whitespace character
+                    title="Please enter a valid contact number"
                     />
                 </FormGroup>
                 </Col>
@@ -296,6 +327,9 @@ const handleReset = () => {
                       setDOB(event.target.value);
                     }}
                     onBlur={calculateAge}
+                    required
+                    pattern=".*\S+.*" // Ensures at least one non-whitespace character
+                    title="Please enter a valid date of birth"
                     />
                 </FormGroup>
                 </Col>
@@ -312,6 +346,7 @@ const handleReset = () => {
                     name="age"
                     placeholder="Age"
                     type="number"
+                    required
                     value={age}
                     onChange={(event) => {
                       setAge(event.target.value);
@@ -324,23 +359,28 @@ const handleReset = () => {
                     <Label for="classroom">
                     Classroom
                     </Label>
-                    <Input
+                    
+                      { 
+                      Classrooms.map((classroomOption) => (
+                        //classroomId = (classroomOption.id);
+                        <Input
                     id="classroom"
                     name="classroom"
                     placeholder="Classroom"
                     type="select"
-                    value={classroomName}
-                    onChange={(event) => {
-                      setClassroomName(event.target.value);
-                    }}
+                    
                     >
-                      {Classrooms.map((classroomOption) => (
-                          <option key={classroomOption.id} value={classroomOption.name}>
+                          <option key={classroomOption.id} value={classroomOption.id}
+                          onChange={(event) => {
+                            console.log("Selected value:", event.target.value);
+                            setClassroomId(event.target.value);
+                          }}>
                             {classroomOption.name}
                           </option>
+                          </Input>
                         ))}
-                               
-                    </Input>
+                
+                    
                 </FormGroup>
                 </Col>
             </Row>
@@ -360,6 +400,7 @@ const handleReset = () => {
             tag="input"
             type="submit"
             value="Update"
+            onClick={updateStudent}
         />
         {' '}
         <Button

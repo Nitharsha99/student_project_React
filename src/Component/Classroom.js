@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, Load, useRef } from 'react';
+import axios from "axios";
 import { Button,Form,FormGroup,Input,
     Label,Row,Col, Badge,  Collapse,
     Navbar,
@@ -14,6 +15,101 @@ function Classroom() {
 
 const [id, setId] = useState("");
 const [name, setName] = useState("");
+const [classroom, setClassroom] = useState([]);
+
+const formRef = useRef(null);
+
+useEffect(() => {
+  (async () => await Load())();
+}, []);
+
+async function Load() {  
+    const classes = await axios.get("https://localhost:7186/api/Classroom");
+    setClassroom(classes.data);
+    console.log("classroom",classes.data);
+}
+
+async function saveClassroom(event) {
+   
+    event.preventDefault();
+    try {
+      const result = await axios.post("https://localhost:7186/api/Classroom", {
+        
+       Name: name
+       
+      });
+      console.log("post result", result);
+      alert("Classroom Saved Successfully");
+          //setId("");
+          setName("");
+  
+      Load();
+    } catch (err) {
+      alert(err);
+    }
+  }
+
+async function editClassroom(classroom) {
+    setName(classroom.name);
+   
+    setId(classroom.id);
+  }
+
+const handleReset = () => {
+  setName("");
+  if (formRef.current) {
+    formRef.current.reset(); // Use the reset method on the form if it exists
+  }
+}
+
+async function saveClassroom(event) {
+   
+    event.preventDefault();
+    try {
+      const result = await axios.post("https://localhost:7186/api/Classroom", {
+        
+       Name: name
+       
+      });
+      console.log("post result", result);
+      alert("Classroom Saved Successfully");
+          //setId("");
+          setName("");
+  
+      Load();
+    } catch (err) {
+      alert(err);
+    }
+  }
+
+  async function updateClassroom(event) {
+    event.preventDefault();
+    try {
+        const response = await axios.patch("https://localhost:7186/api/Classroom/"+ classroom.find((u) => u.id === id).id || id,
+        {
+        id: id,
+        Name: name,
+        }
+      );
+      console.log("update", response);
+      alert("Classroom details Updated Successfully");
+      setId("");
+      setName("");
+     
+      Load();
+    } catch (err) {
+      alert(err);
+    }
+  }
+
+  async function DeleteClassroom(id) {
+    const response = await axios.delete("https://localhost:7186/api/Classroom/" + id);
+    console.log("delete response", response);
+     alert("Classroom deleted Successfully");
+     //setId("");
+     setName("");
+     Load();
+    }
 
     return (
       <div >
@@ -38,12 +134,15 @@ const [name, setName] = useState("");
                     <Input
                     id="name"
                     name="name"
-                    placeholder="Subject Name"
+                    placeholder="Classroom Name"
                     type="text"
                     value={name}
                     onChange={(event) => {
                       setName(event.target.value);
                     }}
+                    required
+                    pattern=".*\S+.*" // Ensures at least one non-whitespace character
+                    title="Please enter a valid Name"
                     />
                 </FormGroup>
                 </Col>
@@ -58,6 +157,7 @@ const [name, setName] = useState("");
             type="submit"
             value="Save"
             tag="input"
+            onClick={saveClassroom}
         >
         </Button>
         {' '}
@@ -66,6 +166,7 @@ const [name, setName] = useState("");
             tag="input"
             type="submit"
             value="Update"
+            onClick={updateClassroom}
         />
         {' '}
         <Button
@@ -73,6 +174,7 @@ const [name, setName] = useState("");
             tag="input"
             type="reset"
             value="Reset"
+            onClick={handleReset}
         />
         {' '}
         </div>
@@ -107,26 +209,30 @@ const [name, setName] = useState("");
       </th>
     </tr>
   </thead>
+  {classroom.map(function fn(classroom) { return (
   <tbody>
     <tr>
       <th scope="row">
-        1
+        {classroom.id}
       </th>
       <td>
-        Mark
+        {classroom.name}
       </td>
       <td>
       <Button color="primary"
-            tag="input" type="submit" value="Edit" size='sm'/>
+            tag="input" type="submit" value="Edit" size='sm'
+            onClick={() => editClassroom(classroom)}/>
       </td>
       <td>
       <Button color="danger"
             tag="input" type="submit" value="Remove" size='sm'
-            //onClick={() => DeleteStudent(student.id)}
+            onClick={() => DeleteClassroom(classroom.id)}
             />
       </td>
     </tr>
   </tbody>
+  );
+  })}
 </Table>
 
         </div>
