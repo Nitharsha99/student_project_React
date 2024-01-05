@@ -9,6 +9,7 @@ import { Collapse,
     Nav,
     NavItem,
     NavLink } from 'reactstrap';
+import Subject from "./Component/Subject";
 
 function App(props) {
   const [collapsed, setCollapsed] = useState(true);
@@ -36,7 +37,7 @@ function App(props) {
               </NavLink>
             </NavItem>
             <NavItem>
-              <NavLink href="https://github.com/reactstrap/reactstrap">
+              <NavLink href="/subject">
                 Subjects
               </NavLink>
             </NavItem>
@@ -54,6 +55,7 @@ function App(props) {
         <Route >
           <Route path="/student" element={<Student />} />
           <Route path="/teacher" element={<Teacher />} />
+          <Route path="/subject" element={<Subject />} />
           <Route path="*" element={<Student />} />
         </Route>
       </Routes>

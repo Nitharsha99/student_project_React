@@ -7,15 +7,15 @@ import { Button,Form,FormGroup,Input,
     Nav,
     NavItem,
     NavLink, Table } from 'reactstrap';
-import './../Styles/Teacher.css';
+import './../Styles/Subject.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-function Teacher() {
+function Subject() {
 
     return (
       <div >
 
-     <div className='Teacher-form'>
+     <div className='Subject-form'>
 
      <Navbar
                 className="my-2"
@@ -23,19 +23,19 @@ function Teacher() {
                 dark
             >
                 <NavbarBrand href="/">
-                Teacher Details
+                Subject Details
                 </NavbarBrand>
             </Navbar>
                 <Row>
                 <Col md={6}>
                 <FormGroup>
-                    <Label for="fname">
-                    First Name
+                    <Label for="name">
+                    Name
                     </Label>
                     <Input
-                    id="fname"
-                    name="firstName"
-                    placeholder="First Name"
+                    id="name"
+                    name="name"
+                    placeholder="Subject Name"
                     type="text"
                     />
                 </FormGroup>
@@ -55,34 +55,6 @@ function Teacher() {
                 </Col>
             </Row>
 
-            <Row>
-                <Col md={6}>
-                <FormGroup>
-                    <Label for="email">
-                    Email
-                    </Label>
-                    <Input
-                    id="email"
-                    name="email"
-                    placeholder="Email Address"
-                    type="email"
-                    />
-                </FormGroup>
-                </Col>
-                <Col md={6}>
-                <FormGroup>
-                    <Label for="contact">
-                    Contact No
-                    </Label>
-                    <Input
-                    id="contact"
-                    name="contact"
-                    placeholder="Contact Number"
-                    type="text"
-                    />
-                </FormGroup>
-                </Col>
-            </Row>
 
     <div class="button">
         <Button
@@ -118,7 +90,7 @@ function Teacher() {
 
      </div>
 
-        <div className='Teacher-table'>
+        <div className='Subject-table'>
 
         <Navbar
                 className="my-2"
@@ -126,7 +98,7 @@ function Teacher() {
                 dark
             >
                 <NavbarBrand href="/">
-                Existing Teachers
+                Existing Subjects
                 </NavbarBrand>
             </Navbar>
         <Table striped>
@@ -137,12 +109,6 @@ function Teacher() {
       </th>
       <th>
         Last Name
-      </th>
-      <th>
-        Email
-      </th>
-      <th>
-        ContactNo
       </th>
       <th>
         Edit
@@ -158,12 +124,6 @@ function Teacher() {
         Mark
       </td>
       <td>
-        Otto
-      </td>
-      <td>
-        @mdo
-      </td>
-      <td>
       <Button color="primary"
             tag="input" value="Edit" size='sm'/>
       </td>
@@ -176,12 +136,6 @@ function Teacher() {
         Jacob
       </td>
       <td>
-        Thornton
-      </td>
-      <td>
-        @fat
-      </td>
-      <td>
       <Button color="primary"
             tag="input" value="Edit" size='sm'/>
       </td>
@@ -192,12 +146,6 @@ function Teacher() {
       </th>
       <td>
         Larry
-      </td>
-      <td>
-        the Bird
-      </td>
-      <td>
-        @twitter
       </td>
       <td>
         <Button color="primary"
@@ -213,4 +161,4 @@ function Teacher() {
     );
   }
   
-  export default Teacher;
+  export default Subject;
